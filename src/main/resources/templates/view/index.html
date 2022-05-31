@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список пользователей</title>
+</head>
+<body>
+<h1>Пользователи</h1>
+<table border="1">
+    <tr style="color: indianred">
+        <th>Id</th>
+        <th>Имя</th>
+        <th>Возраст</th>
+    </tr>
+    <tr>
+    <tr th:each="user : ${people}">
+        <td th:utext="${user.getId()}"></td>
+        <td th:utext="${user.getName()}"></td>
+        <td th:utext="${user.getAge()}"></td>
+        <td>
+            <form th:method="DELETE" th:action="@{/people/{id}(id=${user.getId()})}">
+                <input type="submit" value="Удалить">
+            </form>
+        </td>
+        <td>
+            <a th:href="@{/people/{id}/edit(id=${user.getId()})}">Редактировать</a>
+        </td>
+    </tr>
+</table>
+<br/>
+<br>
+<hr/>
+<h2>Создать нового пользователя</h2>
+<form th:method="POST" th:action="@{/people}" th:object="${newUser}">
+    <label for="name">Имя</label>
+    <input type="text" th:field="*{name}" id="name"/>
+    <br/>
+    <label for="age">Возраст </label>
+    <input type="text" th:field="*{age}" id="age"/>
+    <br/>
+    <br/>
+    <input type="submit" value="Создать!"/>
+</form>
+</body>
+</html>
