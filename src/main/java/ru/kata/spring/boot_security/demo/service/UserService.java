@@ -1,37 +1,18 @@
 package ru.kata.spring.boot_security.demo.service;
 
-import expert.usachev.web.pp_3_1_1_SpringBoot.dao.UserDAO;
-import expert.usachev.web.pp_3_1_1_SpringBoot.model.User;
-import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import ru.kata.spring.boot_security.demo.model.User;
 
 import java.util.List;
 
-@Service
-public class UserService {
-    private final UserDAO userDAO;
+public interface UserService extends UserDetailsService {
+    void saveUser(User user);
 
-    public UserService(UserDAO userDAO) {
-        this.userDAO = userDAO;
-    }
+    void removeUserById(int id);
 
-    public void saveUser(User user) {
-        userDAO.saveUser(user);
-    }
+    void updateUser(User updateUser);
 
-    public void updateUser(User updateUser) {
-        userDAO.updateUser(updateUser);
-    }
+    User getUserById(int id);
 
-    public void removeUserById(int id) {
-        userDAO.removeUserById(id);
-    }
-
-    public List<User> getAllUsers() {
-        return userDAO.getAllUsers();
-    }
-
-    public User getUserById(int id) {
-        return userDAO.getUserById(id);
-    }
-
+    List<User> getAllUsers();
 }

@@ -1,8 +1,8 @@
 package ru.kata.spring.boot_security.demo.dao;
 
-import expert.usachev.web.pp_3_1_1_SpringBoot.model.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kata.spring.boot_security.demo.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -39,5 +39,9 @@ public class UserDAO {
 
     public User getUserById(int id) {
         return entityManager.find(User.class, id);
+    }
+
+    public User getUserByName(String name) {
+        return entityManager.find(User.class, name);
     }
 }

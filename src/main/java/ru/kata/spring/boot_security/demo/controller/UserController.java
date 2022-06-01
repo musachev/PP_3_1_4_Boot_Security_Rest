@@ -1,24 +1,25 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import expert.usachev.web.pp_3_1_1_SpringBoot.model.User;
-import expert.usachev.web.pp_3_1_1_SpringBoot.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class UserController {
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
     }
 
     @GetMapping("/")
@@ -28,7 +29,7 @@ public class UserController {
         messages.add("I'm Spring MVC application");
         messages.add("5.2.0 version by sep'19 ");
         model.addAttribute("messages", messages);
-        return "hello";
+        return "index";
     }
 
     @ModelAttribute("newUser")
@@ -38,7 +39,7 @@ public class UserController {
 
     @GetMapping("/people")
     public String index(Model model) {
-        model.addAttribute("people", userService.getAllUsers());
+        model.addAttribute("people", userServiceImpl.getAllUsers());
         return "view/index";
     }
 
@@ -46,22 +47,22 @@ public class UserController {
     public String creat(@ModelAttribute("newUser") User user,
                         BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("people", userService.getAllUsers());
+            model.addAttribute("people", userServiceImpl.getAllUsers());
             return "view/index";
         }
-        userService.saveUser(user);
+        userServiceImpl.saveUser(user);
         return "redirect:/people";
     }
 
     @DeleteMapping("/people/{id}")
     public String deletePerson(@PathVariable("id") int id) {
-        userService.removeUserById(id);
+        userServiceImpl.removeUserById(id);
         return "redirect:/people";
     }
 
     @GetMapping("/people/{id}/edit")
     public String edit(@ModelAttribute("id") int id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
+        model.addAttribute("user", userServiceImpl.getUserById(id));
         return "view/edit";
     }
 
@@ -70,7 +71,20 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "view/edit";
         }
-        userService.updateUser(updateuser);
+        userServiceImpl.updateUser(updateuser);
         return "redirect:/people";
+    }
+
+    @GetMapping("/admin")
+    public String adminPage() {
+        return "redirect:/people";
+    }
+
+    @GetMapping(value = "/user")
+    public String showUserInfo(@CurrentSecurityContext(expression = "authentication.principal") User principal,
+                               Model model) {
+        model.addAttribute("user", principal);
+
+        return "user";
     }
 }
