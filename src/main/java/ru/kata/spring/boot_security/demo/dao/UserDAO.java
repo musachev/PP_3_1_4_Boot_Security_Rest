@@ -6,6 +6,7 @@ import ru.kata.spring.boot_security.demo.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 
@@ -17,7 +18,6 @@ public class UserDAO {
     @Transactional
     public void saveUser(User user) {
         entityManager.persist(user);
-        entityManager.close();
     }
 
     @Transactional
@@ -34,14 +34,17 @@ public class UserDAO {
     }
 
     public List<User> getAllUsers() {
-        return entityManager.createQuery("SELECT user FROM User user", User.class).getResultList();
+        return entityManager.createQuery("select u from User u").getResultList();
     }
 
     public User getUserById(int id) {
         return entityManager.find(User.class, id);
     }
 
-    public User getUserByName(String name) {
-        return entityManager.find(User.class, name);
+    public User getUserByUsername(String username) {
+        TypedQuery<User> q = (entityManager.createQuery("select u from User u " +
+                "join fetch u.roles where u.username = :username", User.class));
+        q.setParameter("username", username);
+        return q.getResultList().stream().findFirst().orElse(null);
     }
 }

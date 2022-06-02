@@ -6,29 +6,30 @@
 </head>
 <body>
 <div>
-    <th:block th:include="menu">Menu</th:block>
+    <table border="1">
+        <tr>
+            <th th:width="50">Id</th>
+            <th th:width="120">Username</th>
+            <th th:width="120">Name</th>
+            <th th:width="120">Roles</th>
+            <th th:width="50">Age</th>
+        </tr>
+        <tr>
+            <td th:utext="${user.getId()}">Id</td>
+            <td th:utext="${user.getUsername()}">Username</td>
+            <td th:utext="${user.getName()}">Name</td>
+            <td>
+                <th:block th:each="role : ${user.roles}">
+                    &nbsp;<span th:text="${role.name}"/>
+                </th:block>
+            </td>
+            <td th:utext="${user.getAge()}">Age</td>
+        </tr>
+    </table>
+    <br>
 </div>
 <div>
-    <table>
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Login</th>
-            <th>Password</th>
-            <th>Имя</th>
-            <th>Возраст</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td th:text="${user.getId()}">Id</td>
-            <td th:text="${user.getUsername()}">Login</td>
-            <td th:text="${user.getPassword()}">Password</td>
-            <td th:text="${user.getName()}">Имя</td>
-            <td th:text="${user.getAge()}">Возраст</td>
-        </tr>
-        </tbody>
-    </table>
+    <th:block th:include="menu">Menu</th:block>
 </div>
 </body>
 </html>
