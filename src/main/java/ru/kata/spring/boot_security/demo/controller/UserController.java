@@ -19,7 +19,6 @@ public class UserController {
     public String showUserInfo(@CurrentSecurityContext(expression = "authentication.principal") User principal,
                                Model model) {
         model.addAttribute("user", principal);
-//        model.addAttribute("user", userService.getUserByUsername(principal.getName()));
         return "user";
     }
 }
