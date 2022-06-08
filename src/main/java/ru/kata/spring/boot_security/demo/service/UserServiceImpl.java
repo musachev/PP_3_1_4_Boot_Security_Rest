@@ -1,46 +1,85 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.kata.spring.boot_security.demo.dao.RoleDAO;
 import ru.kata.spring.boot_security.demo.dao.UserDAO;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 
+import javax.annotation.PostConstruct;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
+@Transactional
 @Service
 public class UserServiceImpl implements UserService {
+
     private final UserDAO userDAO;
+    private final RoleDAO roleDAO;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserDAO userDAO) {
+    public UserServiceImpl(UserDAO userDAO, RoleDAO roleDAO, PasswordEncoder passwordEncoder) {
         this.userDAO = userDAO;
+        this.roleDAO = roleDAO;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public void saveUser(User user) {
-        userDAO.saveUser(user);
+    public User passwordCoder(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return user;
     }
 
     @Override
-    public void updateUser(User updateUser) {
-        userDAO.updateUser(updateUser);
+    public List<User> findAll() {
+        return userDAO.findAll();
     }
 
     @Override
-    public void removeUserById(int id) {
-        userDAO.removeUserById(id);
+    public User getById(long id) {
+        User user = null;
+        Optional<User> optional = userDAO.findById(id);
+        if(optional.isPresent()) {
+            user = optional.get();
+        }
+        return user;
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userDAO.getAllUsers();
+    public void save(User user) {
+        userDAO.save(passwordCoder(user));
     }
 
     @Override
-    public User getUserById(int id) {
-        return userDAO.getUserById(id);
+    public void update(User user) {
+        userDAO.save(user);
     }
 
     @Override
-    public User getUserByUsername(String username) {
-        return userDAO.getUserByUsername(username);
+    public void deleteById(long id) {
+        userDAO.deleteById(id);
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return userDAO.findByUsername(username);
+    }
+
+    @Override
+    @PostConstruct
+    public void addDefaultUser() {
+        Set<Role> roles1 = new HashSet<>();
+        roles1.add(roleDAO.findById(1L).orElse(null));
+        Set<Role> roles2 = new HashSet<>();
+        roles2.add(roleDAO.findById(1L).orElse(null));
+        roles2.add(roleDAO.findById(2L).orElse(null));
+        User user1 = new User("Test","Testovich",(byte) 25, "user@mail.com", "user","R4e3w2q1",roles1);
+        User user2 = new User("Testa","Testovicha",(byte) 30, "admin@mail.com", "admin","R4e3w2q1",roles2);
+        save(user1);
+        save(user2);
     }
 }
